@@ -23,6 +23,16 @@ namespace DataStructuresAndAlgorithms.DataStructures
         protected Node head;
 
         /// <summary>
+        /// Get the Head node of the List
+        /// </summary>
+        /// <returns></returns>
+        virtual public Node Head()
+        {
+            currentNode = head;
+            return head;
+        }
+
+        /// <summary>
         /// Add a new entry to the linked list. Each implementation executes this differently
         /// </summary>
         /// <param name="data"></param>
@@ -34,21 +44,32 @@ namespace DataStructuresAndAlgorithms.DataStructures
         /// <returns></returns>
         virtual public Node GetNext()
         {
-            return head;
+            //Shift current Node to next Node, if possible, and return it
+            if (currentNode.Next != null)
+                currentNode = currentNode.Next;
+            return currentNode;
         }
+
+        /// <summary>
+        /// Returns the Node that the Node pointer is currently pointed at
+        /// </summary>
+        /// <returns></returns>
+        virtual public Node GetCurrentNode()
+        {
+            return currentNode;
+        }
+
+        /// <summary>
+        /// Removes the Node at the current Node pointer.
+        /// Returns bool indicating success
+        /// </summary>
+        /// <returns></returns>
+        abstract public bool RemoveCurrentNode();
         
         /// <summary>
-        /// Returns the next Node after the given Node. Will return null if no more nodes
+        /// The current Node pointer. Used to show which Node we are currently pointed at
         /// </summary>
-        /// <param name="currentNode"></param>
-        /// <returns></returns>
-        virtual public Node GetNext(Node currentNode)
-        {
-            Node nextNode = null;
-            if (currentNode.Next != null)
-                nextNode = currentNode.Next;
-            return nextNode;
-        }
+        protected Node currentNode;
     }
 
     /// <summary>
@@ -69,25 +90,55 @@ namespace DataStructuresAndAlgorithms.DataStructures
             if (head == null)
             {
                 //Linked List has ot been initialised yet, so create it
-                head = new Node();
-
-                head.Data = data;
-                head.Next = null;
+                head = new Node
+                {
+                    Data = data,
+                    Next = null                    
+                };
+                currentNode = head;
             }
             else
             {
                 //create the required node
-                Node toAdd = new Node();
-                toAdd.Data = data;
-                toAdd.Next = null;
+                Node toAdd = new Node
+                {
+                    Data = data,
+                    Next = null
+                };
 
                 //scan through the Linked List to find the last node
-                Node currentNode = head; //start at the first node
-                while (currentNode.Next != null)
-                    currentNode = currentNode.Next;
+                Node node = head; //start at the first node
+                while (node.Next != null)
+                    node = node.Next;
 
-                currentNode.Next = toAdd; //insert the new node at the end
+                node.Next = toAdd; //insert the new node at the end
             }
+        }
+
+        public override bool RemoveCurrentNode()
+        {
+            //check if the Node to be removed is the head Node
+            if (head == currentNode)
+            {
+                head = head.Next;
+                currentNode = head;
+                return true;
+            }
+
+            //scan through Linked List until we find the currentNode
+            Node thisNode = head;
+            while (thisNode.Next != null)
+            {
+                if (thisNode.Next == currentNode)
+                {
+                    thisNode.Next = currentNode.Next;
+                    currentNode = thisNode.Next;
+                    return true;
+                }
+                thisNode = thisNode.Next;
+            }
+
+            throw new Exception("Node not found"); ;
         }
     }
 
@@ -104,14 +155,18 @@ namespace DataStructuresAndAlgorithms.DataStructures
         {
             if (head == null)
             {
-                head = new Node();
-                head.Data = data;
-                head.Next = null;
+                head = new Node
+                {
+                    Data = data,
+                    Next = null
+                };
                 return;
             }
             //create the new Node
-            Node toAdd = new Node();
-            toAdd.Data = data;
+            Node toAdd = new Node
+            {
+                Data = data
+            };
 
             //find the appropriate place to insert the new Node
             Node previousNode = null; 
@@ -149,6 +204,32 @@ namespace DataStructuresAndAlgorithms.DataStructures
                 }                
             }
         }
+
+        public override bool RemoveCurrentNode()
+        {
+            //check if the Node to be removed is the head Node
+            if (head == currentNode)
+            {
+                head = head.Next;
+                currentNode = head;
+                return true;
+            }
+
+            //scan through Linked List until we find the currentNode
+            Node thisNode = head;
+            while (thisNode.Next != null)
+            {
+                if (thisNode.Next == currentNode)
+                {
+                    thisNode.Next = currentNode.Next;
+                    currentNode = thisNode.Next;
+                    return true;
+                }
+                thisNode = thisNode.Next;
+            }
+
+            throw new Exception("Node not found"); ;
+        }
     }
 
     public abstract class DoublyLinkedList : LinkedList
@@ -165,33 +246,53 @@ namespace DataStructuresAndAlgorithms.DataStructures
 
         new public Node head;
         public Node tail;
+        new protected Node currentNode;
 
         /// <summary>
-        /// Returns the head element of the Doubly-Linked List
+        /// Returns the Head node of the list
+        /// </summary>
+        /// <returns></returns>
+        new virtual public Node Head()
+        {
+            currentNode = head;
+            return head;
+        }
+
+        /// <summary>
+        /// Returns the next element of the Doubly-Linked List
         /// </summary>
         /// <returns></returns>
         new virtual public Node GetNext()
         {
-            return head;
+            if (currentNode.Next != null)
+                currentNode = currentNode.Next;
+            return currentNode;
         }
 
         /// <summary>
         /// Returns the tail element of the Doubly-Linked List
         /// </summary>
         /// <returns></returns>
-        virtual public Node GetTail()
+        virtual public Node Tail()
         {
             return tail;
         }
 
         /// <summary>
-        /// Return the next Node to the given Node
+        /// Returns the current Node according to the pointer
         /// </summary>
-        /// <param name="current"></param>
         /// <returns></returns>
-        new virtual public Node GetNext(Node current)
+        virtual public Node GetCurrentNode()
         {
-            return current.Next;
+            return currentNode;
+        }
+
+        //Returns the previous element in the list
+        virtual public Node GetPreviousNode()
+        {
+            if (currentNode.Previous != null)
+                currentNode = currentNode.Previous;
+            return currentNode;
         }
     }
 
@@ -199,13 +300,17 @@ namespace DataStructuresAndAlgorithms.DataStructures
     {
         public SimpleDLL()
         {
-            head = new Node();
-            head.Data = null;
-            head.Previous = null;
+            head = new Node
+            {
+                Data = null,
+                Previous = null
+            };
 
-            tail = new Node();
-            tail.Data = null;
-            tail.Next = null;
+            tail = new Node
+            {
+                Data = null,
+                Next = null
+            };
 
             head.Next = tail;
             tail.Previous = head;
@@ -223,11 +328,39 @@ namespace DataStructuresAndAlgorithms.DataStructures
                 tail.Data = data;
                 return;
             }
-            Node toAdd = new Node();
-            toAdd.Data = data;
-            toAdd.Previous = tail;
-            toAdd.Next = null;
+            Node toAdd = new Node
+            {
+                Data = data,
+                Previous = tail,
+                Next = null
+            };
+            tail.Next = toAdd;
             tail = toAdd;
+        }
+
+        public override bool RemoveCurrentNode()
+        {
+            if (currentNode == head)
+            {
+                head = currentNode.Next;
+                currentNode = head;
+                return true;
+            }
+            if (currentNode == tail)
+            {
+                tail = currentNode.Previous;
+                currentNode = tail;
+                return true;
+            }
+
+            //otherwise we have node in middle of list
+            var prev = currentNode.Previous;
+            var next = currentNode.Next;
+            prev.Next = next;
+            next.Previous = prev;
+            currentNode = next;
+
+            return false;
         }
     }
 
