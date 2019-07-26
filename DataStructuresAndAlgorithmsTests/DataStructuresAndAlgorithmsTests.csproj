@@ -55,10 +55,12 @@
     <Compile Include="Algorithms\MazeSolvingTests.cs" />
     <Compile Include="Algorithms\SearchTests.cs" />
     <Compile Include="Algorithms\SortTests.cs" />
+    <Compile Include="DataStructures\HashTableTests.cs" />
     <Compile Include="DataStructures\LinkedListTests.cs" />
     <Compile Include="DataStructures\MazeStructureTests.cs" />
     <Compile Include="DataStructures\QueueTests.cs" />
     <Compile Include="DataStructures\StackTests.cs" />
+    <Compile Include="Patterns\CommandTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

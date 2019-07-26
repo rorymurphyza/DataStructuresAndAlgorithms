@@ -53,11 +53,13 @@
     <Compile Include="Algorithms\Search.cs" />
     <Compile Include="Algorithms\Sort.cs" />
     <Compile Include="DataStructures\Generic.cs" />
+    <Compile Include="DataStructures\HashTable.cs" />
     <Compile Include="DataStructures\LinkedList.cs" />
     <Compile Include="DataStructures\Queue.cs" />
     <Compile Include="DataStructures\Stack.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="Patterns\CommandPattern.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

@@ -138,7 +138,7 @@ namespace DataStructuresAndAlgorithms.DataStructures
                 thisNode = thisNode.Next;
             }
 
-            throw new Exception("Node not found"); ;
+            throw new Exception("Node not found");
         }
     }
 
@@ -282,7 +282,7 @@ namespace DataStructuresAndAlgorithms.DataStructures
         /// Returns the current Node according to the pointer
         /// </summary>
         /// <returns></returns>
-        virtual public Node GetCurrentNode()
+        new virtual public Node GetCurrentNode()
         {
             return currentNode;
         }
