@@ -27,7 +27,7 @@ namespace DataStructuresAndAlgorithms.DataStructures
             hashTable = new Dictionary<int, object>();
         }
 
-        private object objectToHash;
+        internal object objectToHash;
 
         /// <summary>
         /// Constructor to set number of indices during invokation
@@ -117,8 +117,99 @@ namespace DataStructuresAndAlgorithms.DataStructures
          * a linked list that attaches to the index.
          * Drawback is that we now have to iterate through the linked list
          */
-         
+        private Dictionary<int, LinkedList<object>> hashTable;
+
+        /// <summary>
+        /// Default constructor that will create table with size = 1000
+        /// </summary>
+        public HashTableSeparateChaining()
+        {
+            hashTable = new Dictionary<int, LinkedList<object>>();
+        }
         
+        /// <summary>
+        /// Constructor that allows maximum size of table to be specified
+        /// </summary>
+        /// <param name="size"></param>
+        public HashTableSeparateChaining(int size) : this()
+        {
+            Size = size;
+        }
+
+        /// <summary>
+        /// Insert the object into the HashTable. This call cannot fail and will always return true
+        /// </summary>
+        /// <param name="toInsert"></param>
+        /// <returns></returns>
+        public override bool Insert(object toInsert)
+        {
+            objectToHash = toInsert;
+            int hash = GetHashCode();
+
+            if (hashTable.ContainsKey(hash))
+            {
+                //we already have an entry for this, so we add it to the LinkedList
+                var ll = hashTable[hash];
+                ll.AddLast(toInsert);
+                hashTable[hash] = ll;
+            }
+            else
+            {
+                LinkedList<object> ll = new LinkedList<object>();
+                ll.AddLast(toInsert);
+                hashTable.Add(hash, ll);
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Search for a given hash and return the object if found, null otherwise
+        /// </summary>
+        /// <param name="toFind"></param>
+        /// <returns></returns>
+        public override object Search(object toFind)
+        {
+            objectToHash = toFind;
+            int hash = GetHashCode();
+            object foundObject = null;
+
+            if (hashTable.ContainsKey(hash))
+            {
+                //we have an entry, so lets look for it
+                var ll = hashTable[hash];
+                foreach (object item in ll)
+                {
+                    if (item.Equals(toFind))
+                        return item;
+                }
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Removes a given object from the HashTable if found. Returns true if found and removed, false otherwise.
+        /// </summary>
+        /// <param name="toRemove"></param>
+        /// <returns></returns>
+        public override bool Remove(object toRemove)
+        {
+            objectToHash = toRemove;
+            int hash = GetHashCode();
+
+            if (hashTable.ContainsKey(hash))
+            {
+                //we have an entry, so let's remove it
+                var ll = hashTable[hash];
+                if (ll.Contains(toRemove))
+                {
+                    ll.Remove(toRemove);
+                    hashTable[hash] = ll;
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 
     /// <summary>
