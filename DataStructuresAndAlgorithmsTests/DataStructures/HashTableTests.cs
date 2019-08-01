@@ -134,6 +134,7 @@ namespace DataStructuresAndAlgorithms.DataStructures.Tests
             pri = new PrivateObject(table);
             Assert.IsNotNull((Dictionary<int, LinkedList<object>>)pri.GetFieldOrProperty("hashTable"));
         }
+
         [TestMethod]
         public void SeparateChainingInsert()
         {
@@ -212,7 +213,7 @@ namespace DataStructuresAndAlgorithms.DataStructures.Tests
         }
 
         [TestMethod]
-        public void HashTableMultipleItems()
+        public void SeparateChainingMultipleItems()
         {
             HashTableSeparateChaining table = new HashTableSeparateChaining();
             Assert.IsNotNull(table);
@@ -221,6 +222,138 @@ namespace DataStructuresAndAlgorithms.DataStructures.Tests
             Assert.IsTrue(table.Insert(200));
 
             Assert.IsTrue(table.Insert(1));
+        }
+    }
+
+    [TestClass()]
+    public class HashTableLinearProbingTests
+    {
+        [TestMethod]
+        public void LinearProbingDefaultConstructor()
+        {
+            HashTableLinearProbing table = new HashTableLinearProbing();
+            Assert.IsNotNull(table);
+            Assert.AreEqual(1000, table.Size);
+            PrivateObject pri = new PrivateObject(table);
+            Assert.IsNotNull((int?[])pri.GetFieldOrProperty("hashTable"));
+
+            table = new HashTableLinearProbing(12);
+            Assert.IsNotNull(table);
+            Assert.AreEqual(12, table.Size);
+            pri = new PrivateObject(table);
+            Assert.IsNotNull((int?[])pri.GetFieldOrProperty("hashTable"));
+        }
+
+        [TestMethod]
+        public void LinearProbingInsert()
+        {
+            HashTableLinearProbing table = new HashTableLinearProbing(10);
+            Assert.IsTrue(table.Insert(0));
+            Assert.IsTrue(table.Insert(5));
+            Assert.IsTrue(table.Insert(16));
+            Assert.IsTrue(table.Insert(6));
+
+            PrivateObject pri = new PrivateObject(table);
+            var hashTable = (int?[])pri.GetFieldOrProperty("hashTable");
+            //manually check each entry in the array that has come back
+            Assert.AreEqual(0, hashTable[0]);
+            Assert.IsNull(hashTable[1]);
+            Assert.IsNull(hashTable[2]);
+            Assert.IsNull(hashTable[3]);
+            Assert.IsNull(hashTable[4]);
+            Assert.AreEqual(5, hashTable[5]);
+            Assert.AreEqual(16, hashTable[6]);
+            Assert.AreEqual(6, hashTable[7]);
+            Assert.IsNull(hashTable[8]);
+            Assert.IsNull(hashTable[9]);
+        }
+
+        [TestMethod]
+        public void LinearProbingInsertMaximum()
+        {
+            int size = 10;
+            HashTableLinearProbing table = new HashTableLinearProbing(size);
+            for (int i = 0; i < size; i++)
+                table.Insert(i);
+
+            Assert.IsFalse(table.Insert(0));
+            Assert.IsFalse(table.Insert(4));
+        }
+
+        [TestMethod]
+        public void LinearProbingInsertDuplicate()
+        {
+            HashTableLinearProbing table = new HashTableLinearProbing(10);
+            Assert.IsTrue(table.Insert(10));
+            Assert.IsTrue(table.Insert(20));
+
+            Assert.IsFalse(table.Insert(10));
+            Assert.IsFalse(table.Insert(int.MinValue));
+        }
+
+        [TestMethod]
+        public void LinearProbingSearch()
+        {
+            HashTableLinearProbing table = new HashTableLinearProbing(10);
+            Assert.IsNotNull(table);
+            Assert.IsTrue(table.Insert(0));
+            Assert.IsTrue(table.Insert(5));
+            Assert.IsTrue(table.Insert(16));
+
+            Assert.IsTrue(table.Search(0));
+            Assert.IsTrue(table.Search(5));
+            Assert.IsTrue(table.Search(16));
+
+            Assert.IsFalse(table.Search(2));
+            Assert.IsFalse(table.Search(200));
+            Assert.IsFalse(table.Search(int.MinValue));
+        }
+
+        [TestMethod]
+        public void LinearProbingRemove()
+        {
+            HashTableLinearProbing table = new HashTableLinearProbing(10);
+            Assert.IsNotNull(table);
+            Assert.IsTrue(table.Insert(0));
+            Assert.IsTrue(table.Insert(1));
+            Assert.IsTrue(table.Insert(11));
+
+            Assert.IsTrue(table.Search(1));
+            Assert.IsTrue(table.Remove(1));
+            Assert.IsFalse(table.Search(1));
+            Assert.IsFalse(table.Remove(1));
+        }
+
+        [TestMethod]
+        public void LinearProbingRemoveWithReplace()
+        {
+            HashTableLinearProbing table = new HashTableLinearProbing(10);
+            Assert.IsNotNull(table);
+            Assert.IsTrue(table.Insert(0));
+            Assert.IsTrue(table.Insert(10));
+            Assert.IsTrue(table.Insert(20));
+            Assert.IsTrue(table.Insert(5));
+
+            Assert.IsTrue(table.Remove(10));
+            Assert.IsTrue(table.Search(0));
+            Assert.IsTrue(table.Search(20));
+
+            Assert.IsTrue(table.Insert(1));
+            Assert.IsTrue(table.Remove(5));
+
+            PrivateObject pri = new PrivateObject(table);
+            var hashTable = (int?[])pri.GetFieldOrProperty("hashTable");
+            //check each entry manually
+            Assert.AreEqual(0, hashTable[0]);
+            Assert.AreEqual(1, hashTable[1]);
+            Assert.AreEqual(20, hashTable[2]);
+            Assert.IsNull(hashTable[3]);
+            Assert.IsNull(hashTable[4]);
+            Assert.AreEqual(int.MinValue, hashTable[5]);
+            Assert.IsNull(hashTable[6]);
+            Assert.IsNull(hashTable[7]);
+            Assert.IsNull(hashTable[8]);
+            Assert.IsNull(hashTable[9]);
         }
     }
 }

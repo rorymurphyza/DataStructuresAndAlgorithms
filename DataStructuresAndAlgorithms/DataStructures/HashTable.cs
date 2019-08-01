@@ -172,7 +172,6 @@ namespace DataStructuresAndAlgorithms.DataStructures
         {
             objectToHash = toFind;
             int hash = GetHashCode();
-            object foundObject = null;
 
             if (hashTable.ContainsKey(hash))
             {
@@ -213,11 +212,136 @@ namespace DataStructuresAndAlgorithms.DataStructures
     }
 
     /// <summary>
-    /// A hash table implementation to store items with collisions
-    /// Implements the Linear Probing method
+    /// A hash table implementation to store items with collisions, using basic modulo referencing
+    /// Implements the Linear Probing method, only available for integer classes here.
     /// </summary>
     public class HashTableLinearProbing : HashTable
     {
+        private int?[] hashTable;
+        private new int objectToHash;
+        private int pointer;
+        private int prevPointer;
+
+        /// <summary>
+        /// Default constructor, with internal array Size = 1000
+        /// </summary>
+        public HashTableLinearProbing() : this(size: 1000)
+        {
+            
+        }
+
+        /// <summary>
+        /// Default constructor to give internal array Size = size
+        /// </summary>
+        /// <param name="size"></param>
+        public HashTableLinearProbing(int size)
+        {
+            Size = size;
+            hashTable = new int?[Size];
+        }
+
+        /// <summary>
+        /// Attempts to insert given value into the hashTable, will return true if insert was successful.
+        /// </summary>
+        /// <param name="toInsert"></param>
+        /// <returns></returns>
+        public bool Insert(int toInsert)
+        {
+            if (toInsert == int.MinValue)   //int.MinValue is a special value in this class, it indicates a deleted entry
+                return false;
+
+            objectToHash = toInsert;
+            var hash = GetHashCode();    //the pointer will be the key for this
+            pointer = hash;
+
+            do
+            {
+                if ((hashTable[pointer] == null) || (hashTable[pointer] == int.MinValue))
+                    //int.MinValue represents a deleted item, we want to write there if it has been deleted
+                { 
+                    hashTable[pointer] = toInsert;
+                    return true;
+                }
+                if (hashTable[pointer] == toInsert) //already have this number in the table, cannot reinsert
+                    return false;
+                IncrementPointer();
+            }
+            while ((pointer != hash) && (hashTable[prevPointer] != null));
+            return false;
+        }
+
+        /// <summary>
+        /// Search the hashTable for a specific entry.
+        /// This method ignores the deleted character (int.MinValue) and searches until a null is found
+        /// </summary>
+        /// <param name="toFind"></param>
+        /// <returns></returns>
+        public bool Search(int toFind)
+        {
+            if (toFind == int.MinValue) //int.MinValue is a special value
+                return false;
+
+            objectToHash = toFind;
+            var hash = GetHashCode();
+            pointer = hash;
+
+            do
+            {
+                if (hashTable[pointer] == toFind)
+                    return true;
+                IncrementPointer();
+            }
+            while ((pointer != hash) && (hashTable[prevPointer] != null));
+            return false;
+        }
+
+        /// <summary>
+        /// Removes the given value from the table, returning true if a match was found and removed.
+        /// Removed avlues are marked with the special character (int.MinValue)
+        /// </summary>
+        /// <param name="toRemove"></param>
+        /// <returns></returns>
+        public bool Remove(int toRemove)
+        {
+            if (toRemove == int.MinValue) //special value
+                return false;
+
+            if (!this.Search(toRemove)) //value is not in table
+                return false;
+
+            objectToHash = toRemove;
+            var hash = GetHashCode();
+            pointer = hash;
+
+            do
+            {
+                if (hashTable[pointer] == toRemove)
+                {
+                    hashTable[pointer] = int.MinValue;
+                    return true;
+                }
+                IncrementPointer();
+            }
+            while ((pointer != hash) && (hashTable[prevPointer] != null));
+            return false;
+        }
+
+        /// <summary>
+        /// Implement the modulo hashing specific for this class
+        /// </summary>
+        /// <returns></returns>
+        public override int GetHashCode()
+        {
+            return objectToHash % Size;
+        }
+
+        private void IncrementPointer()
+        {
+            prevPointer = pointer;
+            pointer++;
+            if (pointer == Size)
+                pointer = 0;
+        }
     }
 
     /// <summary>
