@@ -17,7 +17,7 @@ namespace DataStructuresAndAlgorithms.DataStructures
         /// </summary>
         public int Size = 1000;
 
-        private Dictionary<int, object> hashTable;
+        internal Dictionary<int, object> hashTable;
 
         /// <summary>
         /// Default constructor creates HashTable with size = 1000
@@ -117,7 +117,7 @@ namespace DataStructuresAndAlgorithms.DataStructures
          * a linked list that attaches to the index.
          * Drawback is that we now have to iterate through the linked list
          */
-        private Dictionary<int, LinkedList<object>> hashTable;
+        new private Dictionary<int, LinkedList<object>> hashTable;
 
         /// <summary>
         /// Default constructor that will create table with size = 1000
@@ -217,7 +217,7 @@ namespace DataStructuresAndAlgorithms.DataStructures
     /// </summary>
     public class HashTableLinearProbing : HashTable
     {
-        private int?[] hashTable;
+        new private int?[] hashTable;
         private new int objectToHash;
         private int pointer;
         private int prevPointer;
@@ -345,12 +345,97 @@ namespace DataStructuresAndAlgorithms.DataStructures
     }
 
     /// <summary>
-    /// A hash table implementation to store items with collisions
+    /// A hash table implementation to store items with collisions. Implements a int?[] for storage
     /// Implements the Quadratic Probing method
     /// </summary>
     public class HashTableQuadraticProbing : HashTable
     {
+        new private int?[] hashTable;
+        new private int objectToHash;
+        private int pointer;
+        private int k;  //the k value that will scan forward if needed
+        private int prevPointer = 0; 
 
+        /// <summary>
+        /// Default constructor to give a Size = 1000
+        /// </summary>
+        public HashTableQuadraticProbing() : this(size: 1000)
+        {
+
+        }
+
+        /// <summary>
+        /// Constructor to specify size of array.
+        /// </summary>
+        /// <param name="size"></param>
+        public HashTableQuadraticProbing(int size)
+        {
+            Size = size;
+            hashTable = new int?[size];
+        }
+
+        /// <summary>
+        /// Attempts to insert the given value into HashTableQuadraticProbing. Returns true if it could be inserted, false otherwise.
+        /// </summary>
+        /// <param name="toInsert"></param>
+        /// <returns></returns>
+        public bool Insert(int toInsert)
+        {
+            if (toInsert == int.MinValue)
+                return false;
+
+            objectToHash = toInsert;
+            k = 0;
+            pointer = GetHashCode();
+
+            do
+            {
+                if ((hashTable[pointer] == null) || (hashTable[pointer] == int.MinValue))
+                {
+                    hashTable[pointer] = toInsert;
+                    return true;
+                }
+                prevPointer = pointer;
+                pointer = GetHashCode();
+            }
+            while ((pointer != int.MinValue) && (hashTable[prevPointer] != null));
+
+            return false;
+        }
+
+        public bool Search(int toFind)
+        {
+            if (toFind == int.MinValue)
+                return false;
+
+            objectToHash = toFind;
+            k = 0;
+            pointer = GetHashCode();
+
+            do
+            {
+                if (hashTable[pointer] == toFind)
+                    return true;
+                prevPointer = pointer;
+                pointer = GetHashCode();
+            }
+            while ((pointer != int.MinValue) && (hashTable[prevPointer] != null));
+
+            return false;
+        }
+
+        /// <summary>
+        /// Implements the quadratic hashing function. Will return int.minvalue if the size of the array is exceeded.
+        /// </summary>
+        /// <returns></returns>
+        public override int GetHashCode()
+        {
+            var hash = (objectToHash % Size) + (k * k);
+            k++;
+            if (hash >= Size)
+                return int.MinValue;
+            return hash;
+        }
     }
 
     /// <summary>

@@ -26,7 +26,7 @@ namespace DataStructuresAndAlgorithms.DataStructures.Tests
             pri = new PrivateObject(table);
             Assert.IsNotNull((Dictionary<int, object>)pri.GetFieldOrProperty("hashTable"));
         }
-               
+
         [TestMethod]
         public void HashTableInsert()
         {
@@ -354,6 +354,126 @@ namespace DataStructuresAndAlgorithms.DataStructures.Tests
             Assert.IsNull(hashTable[7]);
             Assert.IsNull(hashTable[8]);
             Assert.IsNull(hashTable[9]);
+        }
+    }
+
+    [TestClass()]
+    public class HashTableQuadraticProbingTests
+    {
+        [TestMethod]
+        public void QuadraticProbingDefaultConstructor()
+        {
+            HashTable table = new HashTableQuadraticProbing();
+            Assert.IsNotNull(table);
+            Assert.AreEqual(1000, table.Size);
+            PrivateObject pri = new PrivateObject(table);
+            Assert.IsNotNull((int?[])pri.GetFieldOrProperty("hashTable"));
+
+            table = new HashTableQuadraticProbing(12);
+            Assert.IsNotNull(table);
+            Assert.AreEqual(12, table.Size);
+            pri = new PrivateObject(table);
+            Assert.IsNotNull((int?[])pri.GetFieldOrProperty("hashTable"));
+        }
+
+        [TestMethod]
+        public void QuadraticProbingInsert()
+        {
+            HashTableQuadraticProbing table = new HashTableQuadraticProbing(100);
+            Assert.IsNotNull(table);
+
+            Assert.IsTrue(table.Insert(0));
+            Assert.IsTrue(table.Insert(1));
+            Assert.IsTrue(table.Insert(2));
+
+            Assert.IsTrue(table.Insert(20));
+            Assert.IsTrue(table.Insert(30));
+
+            Assert.IsTrue(table.Insert(120));   //should be in table position 21
+            Assert.IsTrue(table.Insert(220));   //should be in table position 24
+            Assert.IsTrue(table.Insert(320));   //should be in table position 29
+
+            PrivateObject pri = new PrivateObject(table);
+            var hashTable = (int?[])pri.GetFieldOrProperty("hashTable");
+            Assert.AreEqual(0, hashTable[0]);
+            Assert.AreEqual(1, hashTable[1]);
+            Assert.AreEqual(2, hashTable[2]);
+            for (int i = 3; i < 20; i++)
+                Assert.IsNull(hashTable[i]);
+
+            Assert.AreEqual(20, hashTable[20]);
+            Assert.AreEqual(120, hashTable[21]);
+            Assert.IsNull(hashTable[22]);
+            Assert.IsNull(hashTable[23]);
+            Assert.AreEqual(220, hashTable[24]);
+            Assert.IsNull(hashTable[25]);
+            Assert.IsNull(hashTable[26]);
+            Assert.IsNull(hashTable[27]);
+            Assert.IsNull(hashTable[28]);
+            Assert.AreEqual(320, hashTable[29]);
+            Assert.AreEqual(30, hashTable[30]);
+            for (int i = 31; i < table.Size; i++)
+                Assert.IsNull(hashTable[i]);
+        }
+
+        [TestMethod]
+        public void QuadraticProbingInsertMultiple()
+        {
+            var table = new HashTableQuadraticProbing(10);
+            Assert.IsTrue(table.Insert(0));
+            Assert.IsTrue(table.Insert(1));     //k = 0, table[1]
+            Assert.IsTrue(table.Insert(11));    //k = 1, table[2]
+            Assert.IsTrue(table.Insert(21));    //k = 2, table[5]
+            Assert.IsTrue(table.Insert(5));     //k = 1, table[6]
+
+            Assert.IsFalse(table.Insert(31));    //k = 3, table[10] -> error
+
+            PrivateObject pri = new PrivateObject(table);
+            var hashTable = (int?[])pri.GetFieldOrProperty("hashTable");
+            Assert.AreEqual(0, hashTable[0]);
+            Assert.AreEqual(1, hashTable[1]);
+            Assert.AreEqual(11, hashTable[2]);
+            Assert.IsNull(hashTable[3]);
+            Assert.IsNull(hashTable[4]);
+            Assert.AreEqual(21, hashTable[5]);
+            Assert.AreEqual(5, hashTable[6]);
+            Assert.IsNull(hashTable[7]);
+            Assert.IsNull(hashTable[8]);
+            Assert.IsNull(hashTable[9]);
+        }
+
+        [TestMethod]
+        public void QuadraticProbingSearch()
+        {
+            var table = new HashTableQuadraticProbing(100);
+            Assert.IsNotNull(table);
+            Assert.IsTrue(table.Insert(0));     //k = 0, HashTable[0]
+            Assert.IsTrue(table.Insert(1));     //k = 0, HashTable[1]
+            Assert.IsTrue(table.Insert(10));    //k = 2, HashTable[4]
+            Assert.IsTrue(table.Insert(20));    //k = 3, HashTable[9]
+            Assert.IsTrue(table.Insert(30));    //k = 4, HashTable[16]
+
+            Assert.IsTrue(table.Search(0));
+            Assert.IsTrue(table.Search(1));
+            Assert.IsTrue(table.Search(10));
+            Assert.IsTrue(table.Search(20));
+            Assert.IsTrue(table.Search(30));
+
+            Assert.IsFalse(table.Search(12));
+            Assert.IsFalse(table.Search(17));
+            Assert.IsFalse(table.Search(29));
+        }
+
+        [TestMethod]
+        public void QuadraticProbingRemove()
+        {
+            
+        }
+
+        [TestMethod]
+        public void QuadraticProbingRemoveMultiple()
+        {
+            Assert.Fail();
         }
     }
 }
