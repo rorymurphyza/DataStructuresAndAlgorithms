@@ -467,13 +467,52 @@ namespace DataStructuresAndAlgorithms.DataStructures.Tests
         [TestMethod]
         public void QuadraticProbingRemove()
         {
-            
+            var table = new HashTableQuadraticProbing(10);
+            Assert.IsNotNull(table);
+
+            Assert.IsTrue(table.Insert(0));     //k = 0, HashTable[0]
+            Assert.IsTrue(table.Insert(1));     //k = 0, HashTable[1]
+            Assert.IsTrue(table.Insert(2));     //k = 0, HashTable[2]
+            Assert.IsTrue(table.Insert(10));    //k = 2, HashTable[4]
+
+            Assert.IsTrue(table.Search(1));
+            Assert.IsTrue(table.Remove(1));     //HashTable[1] = int.MinValue
+            Assert.IsTrue(table.Search(0));
+            Assert.IsFalse(table.Search(1));
+            Assert.IsTrue(table.Search(2));
+
+            PrivateObject pri = new PrivateObject(table);
+            var hashTable = (int?[])pri.GetFieldOrProperty("hashTable");
+            Assert.AreEqual(0, hashTable[0]);
+            Assert.AreEqual(int.MinValue, hashTable[1]);
+            Assert.AreEqual(2, hashTable[2]);
+            Assert.IsNull(hashTable[3]);
+            Assert.AreEqual(10, hashTable[4]);
+            for (int i = 5; i < table.Size; i++)
+                Assert.IsNull(hashTable[i]);
         }
 
         [TestMethod]
         public void QuadraticProbingRemoveMultiple()
         {
-            Assert.Fail();
+            var table = new HashTableQuadraticProbing(10);
+            Assert.IsNotNull(table);
+
+            Assert.IsTrue(table.Insert(0));     //k = 0, HashTable[0]
+            Assert.IsTrue(table.Insert(1));     //k = 0, HashTable[1]
+            Assert.IsTrue(table.Insert(2));     //k = 0, HashTable[2]
+            Assert.IsTrue(table.Insert(33));    //k = 0, HashTable[3]
+            Assert.IsTrue(table.Insert(10));    //k = 2, HashTable[4]
+            Assert.IsTrue(table.Insert(20));    //k = 3, HashTable[9]
+
+            Assert.IsTrue(table.Search(1));
+            Assert.IsTrue(table.Remove(1));
+            Assert.IsFalse(table.Search(1));
+
+            Assert.IsTrue(table.Insert(11));
+            Assert.IsTrue(table.Search(11));
+            Assert.IsTrue(table.Remove(11));
+            Assert.IsFalse(table.Search(11));
         }
     }
 }

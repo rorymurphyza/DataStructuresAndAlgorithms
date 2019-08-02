@@ -403,6 +403,11 @@ namespace DataStructuresAndAlgorithms.DataStructures
             return false;
         }
 
+        /// <summary>
+        /// Searches the HashTableQuadraticInsert for the given value. Returns true if found
+        /// </summary>
+        /// <param name="toFind"></param>
+        /// <returns></returns>
         public bool Search(int toFind)
         {
             if (toFind == int.MinValue)
@@ -418,6 +423,36 @@ namespace DataStructuresAndAlgorithms.DataStructures
                     return true;
                 prevPointer = pointer;
                 pointer = GetHashCode();
+            }
+            while ((pointer != int.MinValue) && (hashTable[prevPointer] != null));
+
+            return false;
+        }
+
+        /// <summary>
+        /// Attempts to remove the given parameter from the hashTable. Return true if found and removed
+        /// </summary>
+        /// <param name="toRemove"></param>
+        /// <returns></returns>
+        public bool Remove(int toRemove)
+        {
+            if (toRemove == int.MinValue)
+                return false;
+
+            if (!Search(toRemove))
+                return false;
+
+            objectToHash = toRemove;
+            k = 0;
+            pointer = GetHashCode();
+
+            do
+            {
+                if (hashTable[pointer] == toRemove)
+                {
+                    hashTable[pointer] = int.MinValue;
+                    return true;
+                }
             }
             while ((pointer != int.MinValue) && (hashTable[prevPointer] != null));
 
