@@ -515,4 +515,85 @@ namespace DataStructuresAndAlgorithms.DataStructures.Tests
             Assert.IsFalse(table.Search(11));
         }
     }
+
+    [TestClass]
+    public class HashTableDoubleHashTests
+    {
+        [TestMethod]
+        public void DoubleHashDefaultConstructor()
+        {
+            var table = new HashTableDoubleHash();
+            Assert.IsNotNull(table);
+            Assert.IsInstanceOfType(table, typeof(HashTableDoubleHash));
+            Assert.AreEqual(table.Size, 1000);
+
+            table = new HashTableDoubleHash(100);
+            Assert.IsNotNull(table);
+            Assert.IsInstanceOfType(table, typeof(HashTableDoubleHash));
+            Assert.AreEqual(table.Size, 100);
+        }
+
+        [TestMethod]
+        public void DoubleHashInsert()
+        {
+            var table = new HashTableDoubleHash(100);   //Prime = 97
+            Assert.IsTrue(table.Insert(0));     //table[0]
+            Assert.IsTrue(table.Insert(1));     //table[1]
+            Assert.IsTrue(table.Insert(2));     //table[2]
+
+            Assert.IsTrue(table.Insert(30));    //table[30]
+            Assert.IsTrue(table.Insert(31));    //table[31]
+
+            Assert.IsTrue(table.Insert(100));   //table[97]
+            Assert.IsTrue(table.Insert(200));   //table[94]
+
+            Assert.IsTrue(table.Insert(130));   //table[64]
+            Assert.IsTrue(table.Insert(230));   //table[61]
+
+            Assert.IsTrue(table.Insert(131));   //table[63]
+
+            PrivateObject pri = new PrivateObject(table);
+            var hashTable = (int?[])pri.GetFieldOrProperty("hashTable");
+            Assert.AreEqual(0, hashTable[0]);
+            Assert.AreEqual(1, hashTable[1]);
+            Assert.AreEqual(2, hashTable[2]);
+            for (int i = 3; i < 30; i++)
+                Assert.IsNull(hashTable[i]);
+            Assert.AreEqual(30, hashTable[30]);
+            Assert.AreEqual(31, hashTable[31]);
+
+            Assert.AreEqual(100, hashTable[97]);
+            Assert.AreEqual(200, hashTable[94]);
+            Assert.AreEqual(130, hashTable[64]);
+            Assert.AreEqual(230, hashTable[98]);
+            Assert.AreEqual(131, hashTable[63]);
+        }
+
+        [TestMethod]
+        public void DoubleHashInsertIntoFullTable()
+        {
+            int size = 100;
+            var table = new HashTableDoubleHash(size);
+            Assert.IsNotNull(table);
+            for (int i = 0; i < size; i++)
+                Assert.IsTrue(table.Insert(i));
+            Assert.IsFalse(table.Insert(0));
+            Assert.IsFalse(table.Insert(10));
+
+            size = 10;
+            Random rnd = new Random();
+            table = new HashTableDoubleHash(size);
+            Assert.IsNotNull(table);
+            for (int i = 0; i < size; i++)
+                Assert.IsTrue(table.Insert(rnd.Next(10)));
+            Assert.IsFalse(table.Insert(0));
+            Assert.IsFalse(table.Insert(rnd.Next(10)));
+        }
+
+        [TestMethod]
+        public void DoubleHashInsertMultiple()
+        {
+
+        }
+    }
 }

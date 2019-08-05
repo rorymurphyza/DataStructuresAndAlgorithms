@@ -479,6 +479,119 @@ namespace DataStructuresAndAlgorithms.DataStructures
     /// </summary>
     public class HashTableDoubleHash : HashTable
     {
+        internal int Prime;
+        new internal int objectToHash;
+        new internal int?[] hashTable;
 
+        /// <summary>
+        /// Default Constructor to give table size of 1000
+        /// </summary>
+        public HashTableDoubleHash() : this(size: 1000)
+        {
+
+        }
+
+        /// <summary>
+        /// Constructor to give hashTable size of given parameter
+        /// </summary>
+        /// <param name="size"></param>
+        public HashTableDoubleHash(int size)
+        {
+            Size = size;
+            hashTable = new int?[Size];
+            GeneratePrimeNumber();
+        }
+
+        /// <summary>
+        /// Attempts to insert value into table. Will fail if table is full
+        /// </summary>
+        /// <param name="toInsert"></param>
+        /// <returns></returns>
+        public bool Insert(int toInsert)
+        {
+            if (hashTable.Count(s => s != null) == Size)    //check if table is full
+                return false;
+
+            objectToHash = toInsert;
+            int hash1 = GetHashCode1();
+            int hash2 = GetHashCode2();
+            while (hashTable[hash1] != null)
+            {
+                hash1 += hash2;
+                hash1 %= Size;
+            }
+            hashTable[hash1] = toInsert;
+
+            return true;
+        }
+
+        /// <summary>
+        /// Checks if given value is in table.
+        /// </summary>
+        /// <param name="toFind"></param>
+        /// <returns></returns>
+        public bool Search(int toFind)
+        {
+            objectToHash = toFind;
+            int hash1 = GetHashCode1();
+            int hash2 = GetHashCode2();
+
+            while ((hashTable[hash1] != null) && !(hashTable[hash1] == toFind))
+            {
+                hash1 += hash2;
+                hash1 %= Size;
+            }
+            return hashTable[hash1] != null;
+        }
+
+        public bool Remove(int toRemove)
+        {
+            if (!Search(toRemove))
+                return false;
+
+            objectToHash = toRemove;
+            int hash1 = GetHashCode1();
+            int hash2 = GetHashCode2();
+            while ((hashTable[hash1] != null) && !(hashTable[hash1] == toRemove))
+            {
+                hash1 += hash2;
+                hash1 %= Size;
+            }
+            hashTable[hash1] = null;
+
+            return true;
+        }
+
+        private int GetHashCode1()
+        {
+            return Math.Abs(objectToHash % Size);
+        }
+
+        private int GetHashCode2()
+        {
+            return Math.Abs(Prime - (objectToHash % Size));
+        }
+
+        /// <summary>
+        /// We need a prime number that is smaller than Size in order to implement GetHashCode2()
+        /// </summary>
+        private void GeneratePrimeNumber()
+        {
+            for (int i = Size; i >= 1; i--)
+            {
+                int fact = 0;
+                for (int j = 2; j <= (int)Math.Sqrt(i); j++)
+                {
+                    if (i % j == 0)
+                        fact++;
+                }
+                if (fact == 0)
+                {
+                    Prime = i;
+                    return;
+                }
+            }
+            Prime = 3; 
+        }
     }
 }
